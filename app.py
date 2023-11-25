@@ -2,6 +2,8 @@
 from flask import Flask, request
 import telegram
 from credentials import bot_token, bot_user_name, URL
+import re
+import asyncio
 
 global bot
 global TOKEN 
@@ -30,7 +32,7 @@ def respond():
         Welcome to coolAvatar bot, the bot is using the service from http://avatars.adorable.io/ to generate cool looking avatars based on the name you enter so please enter a name and the bot will reply with an avatar for your name.
         """
         # send the welcoming message
-        bot.sendMessage(chat_id=chat_id, text=bot_welcome, reply_to_message_id=msg_id)
+        asyncio.run(bot.sendMessage(chat_id=chat_id, text=bot_welcome, reply_to_message_id=msg_id))
 
 
     else:
@@ -41,19 +43,16 @@ def respond():
            url = "https://api.adorable.io/avatars/285/{}.png".format(text.strip())
            # reply with a photo to the name the user sent,
            # note that you can send photos by url and telegram will fetch it for you
-           bot.sendPhoto(chat_id=chat_id, photo=url, reply_to_message_id=msg_id)
+           asyncio.run(bot.sendPhoto(chat_id=chat_id, photo=url, reply_to_message_id=msg_id))
        except Exception:
            # if things went wrong
-           bot.sendMessage(chat_id=chat_id, text="There was a problem in the name you used, please enter different name", reply_to_message_id=msg_id)
+           asyncio.run(bot.sendMessage(chat_id=chat_id, text="There was a problem in the name you used, please enter different name", reply_to_message_id=msg_id))
 
     return 'ok'
 
 @app.route('/set_webhook', methods=['GET', 'POST'])
 def set_webhook():
-   print(URL)
-   print(TOKEN)
    s = bot.setWebhook('{URL}{HOOK}'.format(URL=URL, HOOK=TOKEN))
-   print(s)
    if s:
        return "webhook setup ok"
    else:
