@@ -1,48 +1,36 @@
 from flask import Flask, request
-from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram import Bot, Update
+from telegram.ext import CommandHandler, MessageHandler, Filters, CallbackContext, Dispatcher
+import requests
 from credentials import bot_token, URL
 
 app = Flask(__name__)
-
-TOKEN = bot_token
-
-updater = Updater(TOKEN)
-dispatcher = updater.dispatcher
+bot = Bot(token=bot_token)
+dispatcher = Dispatcher(bot, None, workers=0)
 
 @app.route('/')
-def index():
-    return 'Hello, this is your Telegram bot!'
+def hello():
+    return 'Hello, this is your Telegram BOT!'
 
-@app.route(f'/{TOKEN}', methods=['POST'])
-def webhook():
-    json_data = request.get_json()
-    update = Update.de_json(json_data, updater.bot)
+@app.route('/your-webhook-endpoint', methods=['POST'])
+def telegram_webhook():
+    update = Update.de_json(request.get_json(), bot)
     dispatcher.process_update(update)
-    return '', 200
+    return 'OK'
 
-def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Welcome! Please enter your name to get a cool avatar.")
+def start(update: Update, context: CallbackContext):
+    update.message.reply_text("Welcome to the Avatar Bot! Enter your name to get a cool avatar.")
 
-def generate_avatar(update: Update, context: CallbackContext) -> None:
+def generate_avatar(update: Update, context: CallbackContext):
     name = ' '.join(context.args)
-    if not name:
-        update.message.reply_text("Please enter a name.")
-        return
+    if name:
+        avatar_url = f'http://avatars.adorable.io/avatar/{name}.png'
+        update.message.reply_photo(photo=avatar_url)
+    else:
+        update.message.reply_text("Please enter a name to generate an avatar.")
 
-    avatar_url = f'http://avatars.adorable.io/{len(name)}bits/{name}.png'
-    update.message.reply_photo(photo=avatar_url, caption=f"Here's a cool avatar for {name}!")
+dispatcher.add_handler(CommandHandler('start', start))
+dispatcher.add_handler(CommandHandler('generate', generate_avatar))
 
 if __name__ == '__main__':
-    # Add command handlers
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("generateavatar", generate_avatar, pass_args=True))
-
-    # Start the Flask web application
-    app.run(host="0.0.0.0", port=8080)
-    
-    # Start the Updater
-    updater.start_polling()
-
-    # Run the bot until the user presses Ctrl-C
-    updater.idle()
+    app.run(host='0.0.0.0', port=8080)
