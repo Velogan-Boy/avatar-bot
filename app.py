@@ -19,7 +19,7 @@ def telegram_webhook():
     return 'OK'
 
 def start(update: Update, context: CallbackContext):
-    update.message.reply_text(" Welcome to coolAvatar bot, the bot is using the service from http://avatars.adorable.io/ to generate cool looking avatars based on the name. Use /generate command with your name (eg. /generate raghul)")
+    update.message.reply_text(" Welcome to Avatar bot, the bot is using the service from https://ui-avatars.com to generate name avatars based on the name. Use /generate command with your name (eg. /generate raghul pranavesh )")
 
 def generate_avatar(update: Update, context: CallbackContext):
     name = '+'.join(context.args)
