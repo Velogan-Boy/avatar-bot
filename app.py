@@ -22,9 +22,9 @@ def start(update: Update, context: CallbackContext):
     update.message.reply_text(" Welcome to coolAvatar bot, the bot is using the service from http://avatars.adorable.io/ to generate cool looking avatars based on the name. Use /generate command with your name (eg. /generate raghul)")
 
 def generate_avatar(update: Update, context: CallbackContext):
-    name = ' '.join(context.args)
+    name = '+'.join(context.args)
     if name:
-        avatar_url = "https://api.adorable.io/avatars/285/{}.png".format(name.strip())
+        avatar_url = "https://ui-avatars.com/api/?name={}&size=512".format(name.strip())
         update.message.reply_photo(photo=avatar_url)
     else:
         update.message.reply_text("Please enter a name to generate an avatar.")
