@@ -59,7 +59,7 @@ def set_webhook():
    else:
        return "webhook setup failed"
 
-@app.route('/',methods=['GET', 'POST'] )
+@app.route('/',methods=['GET', 'POST'])
 def index():
    return '.'
 
