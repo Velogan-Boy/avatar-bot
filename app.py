@@ -12,7 +12,7 @@ dispatcher = Dispatcher(bot, None, workers=0)
 def hello():
     return 'Hello, this is your Telegram BOT!'
 
-@app.route('/your-webhook-endpoint', methods=['POST'])
+@app.route('/{}'.format(bot_token), methods=['POST'])
 def telegram_webhook():
     update = Update.de_json(request.get_json(), bot)
     dispatcher.process_update(update)
